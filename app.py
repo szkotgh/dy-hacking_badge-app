@@ -11,15 +11,11 @@ def find_arduino():
     global global_port
     
     ports = serial.tools.list_ports.comports()
-    keywords = ["Arduino", "CH340", "FT232R", "USB SERIAL"]
+    keywords = {"Arduino", "CH340", "FT232R", "USB SERIAL"}
     
-    for port in ports:
-        for keyword in keywords:
-            if keyword in port.description:
-                global_port = port
-                return port
+    global_port = next((port for port in ports if any(keyword.lower() in port.description.lower() for keyword in keywords)), None)
     
-    return None
+    return global_port
 
 def clear_line():
     sys.stdout.write("\033[K")
