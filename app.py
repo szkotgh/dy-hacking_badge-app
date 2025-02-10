@@ -4,9 +4,10 @@ import threading
 import os
 import sys
 
+program_name = "Console Serial monitor"
 BPS = 4800
-global_port = None
 
+global_port = None
 def find_arduino():
     global global_port
     
@@ -35,25 +36,25 @@ def read_from_arduino(ser):
                 print(f"{global_port.description} >", end=" ", flush=True)
 
         except Exception as e:
-            print(f"\n[Connection error] {e}")
+            print(f"\n[연결 오류] {e}")
             os._exit(1)
 
 def main():
     while True:
         port = find_arduino()
         if not port:
-            input("[Connection error] Device not found. Check your connection(Press [Enter] to retry) . . .")
+            input("[연결 오류] 장치를 찾지 못했습니다. 연결을 확인하십시오([Enter]키를 눌러 재시도) . . .")
         else:
             break
     
     os.system("cls" if os.name == "nt" else "clear")
 
-    print(f"\nDevice found: {port.device}")
+    print(f"\n장치를 찾았습니다다: {port.device}")
 
     try:
         ser = serial.Serial(port.device, BPS, timeout=1)
-        print(f"Connected to the device: {port.device}")
-        print('To exit the program, either cause an [interrupt] or type [!exit].')
+        print(f"장치와 연결되었습니다: {port.device}")
+        print('프로그램을 종료하려면 [인터루프]를 발생시키거나 [!exit]를 입력하십시오.')
 
         if ser.in_waiting:
             first_data = ser.readline().decode('utf-8', errors='ignore').rstrip("\r\n")
@@ -70,22 +71,23 @@ def main():
             try:
                 user_input = input().strip()
             except KeyboardInterrupt:
-                print("\nProgram terminated.")
+                print("\n프로그램이 종료되었습니다다.")
                 os._exit(0)
             sys.stdout.write("\033[F")
             clear_line()
-            print(f"Your input: {user_input}")
+            print(f"사용자 입력: {user_input}")
 
             if user_input.lower() == "!exit":
-                print("\nProgram terminated.")
+                print("\n프로그램이 종료되었습니다다.")
                 os._exit(0)
             ser.write((user_input + "\n").encode('utf-8'))
 
     except Exception as e:
-        print("\nFailed to connect to device. Make sure it is not open in another program . . . :", e)
+        print("\n장치와 연결을 실패했습니다. 다른 프로그램에서 실행 중인지 확인하십시오 . . . :", e)
     finally:
         if 'ser' in locals() and ser.is_open:
             ser.close()
 
+os.system("title " + program_name)
 if __name__ == "__main__":
     main()
